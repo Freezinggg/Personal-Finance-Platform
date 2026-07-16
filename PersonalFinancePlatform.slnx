@@ -1,5 +1,11 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/PersonalFinancePlatform.API/PersonalFinancePlatform.API.csproj" />
+    <Project Path="src/PersonalFinancePlatform.Application/PersonalFinancePlatform.Application.csproj" />
     <Project Path="src/PersonalFinancePlatform.Domain/PersonalFinancePlatform.Domain.csproj" />
+    <Project Path="src/PersonalFinancePlatform.Infrastructure/PersonalFinancePlatform.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PersonalFinancePlatform.Tests/PersonalFinancePlatform.Tests.csproj" />
   </Folder>
 </Solution>
