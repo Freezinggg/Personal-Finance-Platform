@@ -1,4 +1,4 @@
-﻿namespace PersonalFinancePlatform.API.Contracts.User
+﻿namespace PersonalFinancePlatform.API.Contracts.Auth
 {
     public class RegisterUserRequest
     {

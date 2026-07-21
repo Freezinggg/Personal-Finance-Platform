@@ -15,4 +15,8 @@
     <ProjectReference Include="..\PersonalFinancePlatform.Domain\PersonalFinancePlatform.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Handler\User\" />
+  </ItemGroup>
+
 </Project>

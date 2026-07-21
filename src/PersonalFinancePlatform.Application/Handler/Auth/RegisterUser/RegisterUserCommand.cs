@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace PersonalFinancePlatform.Application.Handler.User.RegisterUser
+namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
 {
     public sealed class RegisterUserCommand : IRequest<Result<RegisterUserResult>>
     {
