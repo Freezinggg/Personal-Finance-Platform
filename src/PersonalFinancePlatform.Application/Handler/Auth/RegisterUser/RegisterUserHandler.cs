@@ -8,9 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PersonalFinancePlatform.Application.Handler.User.RegisterUser
+namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
 {
-    public class RegisterUserHandler(IUserRepository userRepository, IWalletRepository walletRepository, IPasswordHasher passwordHasher, IUnitOfWork unitOfWork) 
+    public class RegisterUserHandler(IUserRepository userRepository, IWalletRepository walletRepository, IPasswordHasher passwordHasher, IUnitOfWork unitOfWork)
         : IRequestHandler<RegisterUserCommand, Result<RegisterUserResult>>
     {
 
@@ -26,24 +26,21 @@ namespace PersonalFinancePlatform.Application.Handler.User.RegisterUser
 
             try
             {
+                Email email = new Email(request.Email);
                 // Check email uniqueness
-                var existingUser = await _userRepo.FindByEmailAsync(request.Email, cancellationToken);
+                var existingUser = await _userRepo.FindByEmailAsync(email, cancellationToken);
                 if (existingUser is not null)
                     return Result<RegisterUserResult>.Invalid("Email already taken, please use another email.");
 
                 // Hash password
-                string hashedPassword = await _passwordHasher.GeneratePasswordAsync(request.Password,cancellationToken);
+                string hashedPassword = _passwordHasher.GeneratePassword(request.Password, cancellationToken);
+
 
                 // Create User
-                await _uow.BeginAsync(cancellationToken);
-                Guid newUserId = Guid.NewGuid();
+                User user = new User(email, request.DisplayName, hashedPassword, now);
 
-                Domain.User.Entities.User user =
-                    new Domain.User.Entities.User(
-                        new Email(request.Email), 
-                        request.DisplayName, 
-                        hashedPassword,
-                        now);
+                
+                await _uow.BeginAsync(cancellationToken);
 
                 // Create default Wallet. Not yet implemented, create another issue/ticket
 

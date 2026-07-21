@@ -25,8 +25,7 @@ namespace PersonalFinancePlatform.Domain.User.ValueObjects
             Value = value.ToLowerInvariant();
         }
 
-        public override string ToString()
-            => Value;
+        public override string ToString() => Value;
 
         public override bool Equals(object? obj)
         {

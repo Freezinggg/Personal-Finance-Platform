@@ -6,6 +6,8 @@ namespace PersonalFinancePlatform.Application.Interfaces.Security
 {
     public interface IPasswordHasher
     {
-        Task<string> GeneratePasswordAsync(string password, CancellationToken cancellationToken);
+        string GeneratePassword(string password, CancellationToken cancellationToken);
+
+        bool VerifyPassword(string password, string passwordHash, CancellationToken cancellationToken);
     }
 }
