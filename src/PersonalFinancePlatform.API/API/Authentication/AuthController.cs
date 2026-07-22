@@ -20,7 +20,7 @@ namespace PersonalFinancePlatform.API.API.Authentication
             _mediator = mediator;
         }
 
-        [HttpPost]
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
         {
             var result = await _mediator.Send(new RegisterUserCommand(request.DisplayName, request.Email, request.Password));

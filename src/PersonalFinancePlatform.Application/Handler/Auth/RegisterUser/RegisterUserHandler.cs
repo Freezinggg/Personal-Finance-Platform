@@ -24,24 +24,23 @@ namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
         {
             DateTime now = DateTime.UtcNow;
 
+            Email email = new Email(request.Email);
+            // Check email uniqueness
+            var existingUser = await _userRepo.FindByEmailAsync(email, cancellationToken);
+            if (existingUser is not null)
+                return Result<RegisterUserResult>.Invalid("Email already taken, please use another email.");
+
+            // Hash password
+            Password password = new Password(request.Password);
+            PasswordHash hashedPassword = _passwordHasher.Hash(password);
+
+            // Create User
+            User user = new User(email, request.DisplayName, hashedPassword, now);
+
+
+            await _uow.BeginAsync(cancellationToken);
             try
             {
-                Email email = new Email(request.Email);
-                // Check email uniqueness
-                var existingUser = await _userRepo.FindByEmailAsync(email, cancellationToken);
-                if (existingUser is not null)
-                    return Result<RegisterUserResult>.Invalid("Email already taken, please use another email.");
-
-                // Hash password
-                string hashedPassword = _passwordHasher.GeneratePassword(request.Password, cancellationToken);
-
-
-                // Create User
-                User user = new User(email, request.DisplayName, hashedPassword, now);
-
-                
-                await _uow.BeginAsync(cancellationToken);
-
                 // Create default Wallet. Not yet implemented, create another issue/ticket
 
                 // Save User
@@ -51,15 +50,15 @@ namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
 
                 // Commit
                 await _uow.CommitAsync(cancellationToken);
-
-                // Return success
-                return Result<RegisterUserResult>.Success(new RegisterUserResult(user.Id));
             }
-            catch (Exception ex)
+            catch
             {
                 await _uow.RollbackAsync(cancellationToken);
-                return Result<RegisterUserResult>.ServiceUnavailable("Register User service unavailable.");
+                return Result<RegisterUserResult>.Error("Unhandled domain exception.");
             }
+
+            // Return success
+            return Result<RegisterUserResult>.Success(new RegisterUserResult(user.Id));
         }
     }
 }

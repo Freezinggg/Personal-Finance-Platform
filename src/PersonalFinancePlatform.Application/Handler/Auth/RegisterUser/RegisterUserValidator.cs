@@ -19,7 +19,8 @@ namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
 
             RuleFor(x => x.Password)
                 .NotEmpty()
-                .MinimumLength(8);
+                .MinimumLength(8)
+                .MaximumLength(25);
         }
     }
 }

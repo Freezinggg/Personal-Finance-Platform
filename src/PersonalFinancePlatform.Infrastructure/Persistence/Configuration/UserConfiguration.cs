@@ -33,6 +33,10 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Configuration
                 .IsRequired();
 
             builder.Property(x => x.PasswordHash)
+                .HasConversion(
+                    hash => hash.Value,
+                    value => new PasswordHash(value))
+                .HasMaxLength(255)   
                 .IsRequired();
 
             builder.Property(x => x.CreatedAt)

@@ -2,11 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace PersonalFinancePlatform.Domain.User.ValueObjects
 {
-    public sealed class Email
+    public sealed class Email : ValueObject
     {
+        private static readonly Regex EmailRegex = new(
+            @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         public string Value { get; }
 
         public Email(string value)
@@ -19,23 +24,17 @@ namespace PersonalFinancePlatform.Domain.User.ValueObjects
             if (value.Length > 320)
                 throw new InvariantViolationException("[Email] is too long.");
 
-            // TODO:
-            // Validate format
+            if (!EmailRegex.IsMatch(value))
+                throw new InvariantViolationException("[Email] format is invalid.");
 
             Value = value.ToLowerInvariant();
         }
 
-        public override string ToString() => Value;
-
-        public override bool Equals(object? obj)
+        protected override IEnumerable<object?> GetEqualityComponents()
         {
-            //Validate if object is Email or not, make it secure
-            if (obj is not Email other)
-                return false;
-
-            return Value == other.Value;
+            yield return Value;
         }
 
-        public override int GetHashCode() => Value.GetHashCode();
+        public override string ToString() => Value;
     }
 }

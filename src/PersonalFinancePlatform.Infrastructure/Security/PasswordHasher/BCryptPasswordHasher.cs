@@ -1,4 +1,5 @@
 ﻿using PersonalFinancePlatform.Application.Interfaces.Security;
+using PersonalFinancePlatform.Domain.User.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,14 +8,15 @@ namespace PersonalFinancePlatform.Infrastructure.Security.PasswordHasher
 {
     public sealed class BCryptPasswordHasher : IPasswordHasher
     {
-        public string GeneratePassword(string password, CancellationToken cancellationToken)
+        public PasswordHash Hash(Password password)
         {
-            return BCrypt.Net.BCrypt.HashPassword(password);
+            PasswordHash hashed = new PasswordHash(BCrypt.Net.BCrypt.HashPassword(password.Value));
+            return hashed;
         }
 
-        public bool VerifyPassword(string password, string passwordHash, CancellationToken cancellationToken)
+        public bool Verify(Password password, PasswordHash passwordHash)
         {
-            return BCrypt.Net.BCrypt.Verify(password, passwordHash);
+            return BCrypt.Net.BCrypt.Verify(password.Value, passwordHash.Value);
         }
     }
 }
