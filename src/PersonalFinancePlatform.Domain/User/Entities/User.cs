@@ -11,11 +11,11 @@ namespace PersonalFinancePlatform.Domain.User.Entities
         public Guid Id { get; }
         public Email Email { get; private set; }
         public string DisplayName { get; private set; }
-        public string PasswordHash { get; private set; }
+        public PasswordHash PasswordHash { get; private set; }
         public DateTime CreatedAt { get; }
 
 
-        public User(Email email, string displayName, string passwordHash, DateTime createdAt)
+        public User(Email email, string displayName, PasswordHash passwordHash, DateTime createdAt)
         {
             if (email is null)
                 throw new InvariantViolationException("[Email] cannot be empty.");
@@ -23,7 +23,7 @@ namespace PersonalFinancePlatform.Domain.User.Entities
             if (string.IsNullOrWhiteSpace(displayName))
                 throw new InvariantViolationException("[Display Name] cannot be empty.");
 
-            if (string.IsNullOrWhiteSpace(passwordHash))
+            if (passwordHash is null)
                 throw new InvariantViolationException("[Password] cannot be empty.");
 
             Id = Guid.NewGuid();
@@ -42,9 +42,9 @@ namespace PersonalFinancePlatform.Domain.User.Entities
             DisplayName = newDisplayName.Trim();
         }
 
-        public void ChangePassword(string newPasswordHash)
+        public void ChangePassword(PasswordHash newPasswordHash)
         {
-            if (string.IsNullOrWhiteSpace(newPasswordHash))
+            if (newPasswordHash is null)
                 throw new InvariantViolationException("[Password] cannot be empty.");
 
             PasswordHash = newPasswordHash;
