@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PersonalFinancePlatform.Infrastructure.Persistence.Configuration;
@@ -11,9 +12,11 @@ using PersonalFinancePlatform.Infrastructure.Persistence.Configuration;
 namespace PersonalFinancePlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260723064341_WalletDomain")]
+    partial class WalletDomain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,18 +80,7 @@ namespace PersonalFinancePlatform.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OwnerId");
-
                     b.ToTable("Wallets", (string)null);
-                });
-
-            modelBuilder.Entity("PersonalFinancePlatform.Domain.Wallet.Entities.Wallet", b =>
-                {
-                    b.HasOne("PersonalFinancePlatform.Domain.User.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

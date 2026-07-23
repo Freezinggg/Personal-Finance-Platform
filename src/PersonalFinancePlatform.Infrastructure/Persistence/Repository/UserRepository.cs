@@ -18,10 +18,9 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Repository
             _dbContext = dbContext;
         }
 
-        public Task AddAsync(User user, CancellationToken cancellationToken)
+        public void Add(User user)
         {
             _dbContext.Users.Add(user);
-            return Task.CompletedTask;
         }
 
         public async Task<User?> FindByEmailAsync(Email email, CancellationToken cancellationToken)

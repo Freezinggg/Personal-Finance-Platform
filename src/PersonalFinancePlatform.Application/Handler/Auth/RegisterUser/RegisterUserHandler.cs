@@ -4,6 +4,7 @@ using PersonalFinancePlatform.Application.Interfaces.Persistence;
 using PersonalFinancePlatform.Application.Interfaces.Security;
 using PersonalFinancePlatform.Domain.User.Entities;
 using PersonalFinancePlatform.Domain.User.ValueObjects;
+using PersonalFinancePlatform.Domain.Wallet.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -37,16 +38,15 @@ namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
             // Create User
             User user = new User(email, request.DisplayName, hashedPassword, now);
 
-
             await _uow.BeginAsync(cancellationToken);
             try
             {
-                // Create default Wallet. Not yet implemented, create another issue/ticket
-
                 // Save User
-                await _userRepo.AddAsync(user, cancellationToken);
+                _userRepo.Add(user);
 
-                // Save Wallet. Not yet implemented, create another issue/ticket
+                // Create and save wallet
+                Wallet wallet = new Wallet(user.Id, "Cash", now);
+                _walletRepo.Add(wallet);
 
                 // Commit
                 await _uow.CommitAsync(cancellationToken);
