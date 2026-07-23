@@ -10,6 +10,6 @@ namespace PersonalFinancePlatform.Application.Interfaces.Persistence
     {
         Task<User?> FindByEmailAsync(Email email, CancellationToken cancellationToken);
 
-        Task AddAsync(User user, CancellationToken cancellationToken);
+        void Add(User user);
     }
 }
