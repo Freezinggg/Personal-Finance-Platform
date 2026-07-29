@@ -15,13 +15,16 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Configuration
 
             builder.ToTable("Wallets");
 
+            builder.Property(x => x.Id)
+                .ValueGeneratedNever(); //DB doesnt genereate Id, instead its domain's job to generate id.
+
             builder.HasKey(x => x.Id);
 
             builder
                 .HasOne<User>()
                 .WithMany()
                 .HasForeignKey(x => x.OwnerId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict); //Cannot delete user unless delete all wallets first.
 
             builder.Property(x => x.WalletName)
                 .HasMaxLength(255)

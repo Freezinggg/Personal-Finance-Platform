@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PersonalFinancePlatform.Domain.Transaction.Entities;
 using PersonalFinancePlatform.Domain.User.Entities;
 using PersonalFinancePlatform.Domain.Wallet.Entities;
 using System;
@@ -16,6 +17,7 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Configuration
 
         public DbSet<User> Users => Set<User>();
         public DbSet<Wallet> Wallets => Set<Wallet>();
+        public DbSet<Transaction> Transactions => Set<Transaction>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

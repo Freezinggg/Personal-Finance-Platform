@@ -9,15 +9,9 @@ using System.Text;
 
 namespace PersonalFinancePlatform.Infrastructure.Persistence.Repository
 {
-    public sealed class UserRepository : IUserRepository
+    public sealed class UserRepository(AppDbContext dbContext) : IUserRepository
     {
-        private readonly AppDbContext _dbContext;
-
-        public UserRepository(AppDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
+        private readonly AppDbContext _dbContext = dbContext;
         public void Add(User user)
         {
             _dbContext.Users.Add(user);

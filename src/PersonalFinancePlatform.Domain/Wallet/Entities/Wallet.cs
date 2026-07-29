@@ -1,4 +1,5 @@
 ﻿using PersonalFinancePlatform.Domain.Exception;
+using PersonalFinancePlatform.Domain.Transaction.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -38,20 +39,23 @@ namespace PersonalFinancePlatform.Domain.Wallet.Entities
             WalletName = newName;
         }
 
-        public void IncreaseBalance(decimal amount)
+        //Can only be accessed within this domain.
+        private void IncreaseBalance(decimal amount) => Balance += amount;
+        private void DecreaseBalance(decimal amount) => Balance -= amount;
+
+        //Function name is Apply because we are trying to Apply financial event/record.
+        public void ApplyTransaction(Domain.Transaction.Entities.Transaction transaction)
         {
-            if(amount <= 0)
-                throw new InvariantViolationException("[Amount] cannot be 0 or negative.");
-
-            Balance += amount;
-        }
-
-        public void DecreaseBalance(decimal amount)
-        {
-            if (amount <= 0)
-                throw new InvariantViolationException("[Amount] cannot be 0 or negative.");
-
-            Balance -= amount;
+            decimal amount = transaction.Amount;
+            switch (transaction.TransactionType)
+            {
+                case TransactionType.Income:
+                    IncreaseBalance(amount);
+                    break;
+                case TransactionType.Expense:
+                    DecreaseBalance(amount);
+                    break;
+            }
         }
     }
 }
