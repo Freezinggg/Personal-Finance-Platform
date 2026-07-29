@@ -7,18 +7,18 @@ using System.Text;
 
 namespace PersonalFinancePlatform.Infrastructure.Persistence.Repository
 {
-    public sealed class WalletRepository : IWalletRepository
+    public sealed class WalletRepository(AppDbContext dbContext) : IWalletRepository
     {
-        private readonly AppDbContext _dbContext;
-
-        public WalletRepository(AppDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
+        private readonly AppDbContext _dbContext = dbContext;
 
         public void Add(Wallet wallet)
         {
             _dbContext.Wallets.Add(wallet);
+        }
+
+        public async Task<Wallet?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        {
+            return await _dbContext.Wallets.FindAsync(id, cancellationToken);
         }
     }
 }

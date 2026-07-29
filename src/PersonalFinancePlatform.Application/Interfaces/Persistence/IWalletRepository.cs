@@ -9,5 +9,6 @@ namespace PersonalFinancePlatform.Application.Interfaces.Persistence
     public interface IWalletRepository
     {
         void Add(Wallet wallet);
+        Task<Wallet?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     }
 }

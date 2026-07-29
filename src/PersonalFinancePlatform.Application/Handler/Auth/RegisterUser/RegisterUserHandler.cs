@@ -11,7 +11,11 @@ using System.Text;
 
 namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
 {
-    public class RegisterUserHandler(IUserRepository userRepository, IWalletRepository walletRepository, IPasswordHasher passwordHasher, IUnitOfWork unitOfWork)
+    public class RegisterUserHandler(
+            IUserRepository userRepository
+            ,IWalletRepository walletRepository
+            ,IPasswordHasher passwordHasher
+            ,IUnitOfWork unitOfWork)
         : IRequestHandler<RegisterUserCommand, Result<RegisterUserResult>>
     {
 

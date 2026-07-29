@@ -16,6 +16,9 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Configuration
 
             builder.HasKey(x => x.Id);
 
+            builder.Property(x => x.Id)
+                .ValueGeneratedNever(); //DB doesnt genereate Id, instead its domain's job to generate id.
+
             builder.Property(x => x.Id);
 
             builder.Property(x => x.Email)
