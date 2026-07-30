@@ -12,27 +12,27 @@ namespace PersonalFinancePlatform.Domain.User.ValueObjects
         public Password(string value)
         {
             if(string.IsNullOrWhiteSpace(value))
-                throw new InvariantViolationException("[Password] cannot be empty.");
+                throw new InvariantViolationException("Password cannot be empty.");
 
             value = value.Trim();
 
             if(value.Length < 8)
-                throw new InvariantViolationException("[Password] too short.");
+                throw new InvariantViolationException("Password too short.");
 
             if (value.Length > 25)
-                throw new InvariantViolationException("[Password] too long.");
+                throw new InvariantViolationException("Password too long.");
 
             if (!value.Any(char.IsUpper))
-                throw new InvariantViolationException("[Password] must at least have 1 Upper Case.");
+                throw new InvariantViolationException("Password must at least have 1 Upper Case.");
 
             if (!value.Any(char.IsLower))
-                throw new InvariantViolationException("[Password] must at least have 1 Lower Case.");
+                throw new InvariantViolationException("Password must at least have 1 Lower Case.");
 
             if (!value.Any(char.IsDigit))
-                throw new InvariantViolationException("[Password] must at least have 1 Number.");
+                throw new InvariantViolationException("Password must at least have 1 Number.");
 
             if (!value.Any(c => !char.IsLetterOrDigit(c)))
-                throw new InvariantViolationException("[Password] must at least have 1 Letter or Digit.");
+                throw new InvariantViolationException("Password must at least have 1 Letter or Digit.");
 
             Value = value;
         }

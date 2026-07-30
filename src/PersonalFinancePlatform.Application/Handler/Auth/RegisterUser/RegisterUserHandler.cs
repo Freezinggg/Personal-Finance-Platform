@@ -1,21 +1,24 @@
 ﻿using MediatR;
 using PersonalFinancePlatform.Application.Common;
+using PersonalFinancePlatform.Application.Handler.Transaction.RecordTransaction;
 using PersonalFinancePlatform.Application.Interfaces.Persistence;
 using PersonalFinancePlatform.Application.Interfaces.Security;
+using PersonalFinancePlatform.Domain.Exception;
 using PersonalFinancePlatform.Domain.User.Entities;
 using PersonalFinancePlatform.Domain.User.ValueObjects;
 using PersonalFinancePlatform.Domain.Wallet.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static PersonalFinancePlatform.Domain.Exception.DomainException;
 
 namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
 {
     public class RegisterUserHandler(
             IUserRepository userRepository
-            ,IWalletRepository walletRepository
-            ,IPasswordHasher passwordHasher
-            ,IUnitOfWork unitOfWork)
+            , IWalletRepository walletRepository
+            , IPasswordHasher passwordHasher
+            , IUnitOfWork unitOfWork)
         : IRequestHandler<RegisterUserCommand, Result<RegisterUserResult>>
     {
 
@@ -27,24 +30,25 @@ namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
 
         public async Task<Result<RegisterUserResult>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            DateTime now = DateTime.UtcNow;
-
-            Email email = new Email(request.Email);
-            // Check email uniqueness
-            var existingUser = await _userRepo.FindByEmailAsync(email, cancellationToken);
-            if (existingUser is not null)
-                return Result<RegisterUserResult>.Invalid("Email already taken, please use another email.");
-
-            // Hash password
-            Password password = new Password(request.Password);
-            PasswordHash hashedPassword = _passwordHasher.Hash(password);
-
-            // Create User
-            User user = new User(email, request.DisplayName, hashedPassword, now);
-
-            await _uow.BeginAsync(cancellationToken);
             try
             {
+                await _uow.BeginAsync(cancellationToken);
+
+                DateTime now = DateTime.UtcNow;
+
+                Email email = new Email(request.Email);
+                // Check email uniqueness
+                var existingUser = await _userRepo.FindByEmailAsync(email, cancellationToken);
+                if (existingUser is not null)
+                    return Result<RegisterUserResult>.Invalid("Email already taken, please use another email.");
+
+                // Hash password
+                Password password = new Password(request.Password);
+                PasswordHash hashedPassword = _passwordHasher.Hash(password);
+
+                // Create User
+                User user = new User(email, request.DisplayName, hashedPassword, now);
+
                 // Save User
                 _userRepo.Add(user);
 
@@ -54,15 +58,31 @@ namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
 
                 // Commit
                 await _uow.CommitAsync(cancellationToken);
+
+                // Return success
+                return Result<RegisterUserResult>.Success(new RegisterUserResult(user.Id));
+
+            }
+            catch (DomainException ex)
+            {
+                //This is domain exception, which is to check INVARIANT
+                await _uow.RollbackAsync(cancellationToken);
+
+                switch (ex.Category)
+                {
+                    case FailureCategory.Invariant:
+                        return Result<RegisterUserResult>.Invalid(ex.Message);
+                    case FailureCategory.Policy or FailureCategory.State:
+                        return Result<RegisterUserResult>.Fail(ex.Message);
+                    default:
+                        return Result<RegisterUserResult>.Error("Unhandled domain exception.");
+                }
             }
             catch
             {
                 await _uow.RollbackAsync(cancellationToken);
                 return Result<RegisterUserResult>.Error("Unhandled domain exception.");
             }
-
-            // Return success
-            return Result<RegisterUserResult>.Success(new RegisterUserResult(user.Id));
         }
     }
 }

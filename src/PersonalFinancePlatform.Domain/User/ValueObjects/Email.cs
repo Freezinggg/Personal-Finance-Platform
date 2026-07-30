@@ -17,15 +17,15 @@ namespace PersonalFinancePlatform.Domain.User.ValueObjects
         public Email(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new InvariantViolationException("[Email] cannot be empty.");
+                throw new InvariantViolationException("Email cannot be empty.");
 
             value = value.Trim();
 
             if (value.Length > 320)
-                throw new InvariantViolationException("[Email] is too long.");
+                throw new InvariantViolationException("Email is too long.");
 
             if (!EmailRegex.IsMatch(value))
-                throw new InvariantViolationException("[Email] format is invalid.");
+                throw new InvariantViolationException("Email format is invalid.");
 
             Value = value.ToLowerInvariant();
         }
