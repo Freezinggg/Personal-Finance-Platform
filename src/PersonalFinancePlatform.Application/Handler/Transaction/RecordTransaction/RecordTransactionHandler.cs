@@ -2,10 +2,12 @@
 using PersonalFinancePlatform.Application.Common;
 using PersonalFinancePlatform.Application.Interfaces.Persistence;
 using PersonalFinancePlatform.Application.Interfaces.Security;
+using PersonalFinancePlatform.Domain.Exception;
 using PersonalFinancePlatform.Domain.Transaction.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static PersonalFinancePlatform.Domain.Exception.DomainException;
 
 namespace PersonalFinancePlatform.Application.Handler.Transaction.RecordTransaction
 {
@@ -22,22 +24,25 @@ namespace PersonalFinancePlatform.Application.Handler.Transaction.RecordTransact
 
         public async Task<Result<RecordTransactionResult>> Handle(RecordTransactionCommand request, CancellationToken cancellationToken)
         {
-            DateTime now = DateTime.UtcNow;
-            //1. Validate request, but mostly its inside domain, no global invariant/business yet.
-
-            //2. Load wallet based on request.WalletId
-            var wallet = await _walletRepo.GetByIdAsync(request.WalletId, cancellationToken);
-            if (wallet is null)
-                return Result<RecordTransactionResult>.Invalid("Invalid wallet. Please make sure you choose the right wallet.");
-
-            //Create transaction
-            Domain.Transaction.Entities.Transaction transaction = 
-                new(request.WalletId, request.Amount, request.Description, request.TransactionType, request.TransactionAt, now);
-
-            //3. Start of UoW
-            await _uow.BeginAsync(cancellationToken);
             try
             {
+                await _uow.BeginAsync(cancellationToken);
+
+                DateTime now = DateTime.UtcNow;
+                //1. Validate request, but mostly its inside domain, no global invariant/business yet.
+
+                //2. Load wallet based on request.WalletId
+                var wallet = await _walletRepo.GetByIdAsync(request.WalletId, cancellationToken);
+                if (wallet is null)
+                    return Result<RecordTransactionResult>.Invalid("Invalid wallet. Please make sure you choose the right wallet.");
+
+                //Create transaction
+                Domain.Transaction.Entities.Transaction transaction =
+                    new(request.WalletId, request.Amount, request.Description, request.TransactionType, request.TransactionAt, now);
+
+                //3. Start of UoW
+                
+
                 //persist transaction
                 _transactionRepo.Add(transaction);
 
@@ -47,13 +52,28 @@ namespace PersonalFinancePlatform.Application.Handler.Transaction.RecordTransact
                 //Commit UoW
                 await _uow.CommitAsync(cancellationToken);
 
-                return Result<RecordTransactionResult>.Success(new RecordTransactionResult( transaction.Id));
+                return Result<RecordTransactionResult>.Success(new RecordTransactionResult(transaction.Id));
+
+            }
+            catch (DomainException ex)
+            {
+                //This is domain exception, which is to check INVARIANT
+                switch (ex.Category)
+                {
+                    case FailureCategory.Invariant:
+                        return Result<RecordTransactionResult>.Invalid(ex.Message);
+                    case FailureCategory.Policy or FailureCategory.State:
+                        return Result<RecordTransactionResult>.Fail(ex.Message);
+                    default:
+                        return Result<RecordTransactionResult>.Error("Unhandled domain exception.");
+                }
             }
             catch
             {
                 await _uow.RollbackAsync(cancellationToken);
                 return Result<RecordTransactionResult>.Error("Unhandled domain exception.");
             }
+
         }
     }
 }

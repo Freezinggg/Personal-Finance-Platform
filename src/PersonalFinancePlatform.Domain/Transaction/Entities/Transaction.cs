@@ -25,13 +25,13 @@ namespace PersonalFinancePlatform.Domain.Transaction.Entities
         public Transaction(Guid walletId, decimal amount, string description, TransactionType transactionType, DateTime transactionAt, DateTime createdAt)
         {
             if (walletId == Guid.Empty)
-                throw new InvariantViolationException("[Wallet] for this transaction cannot be empty.");
+                throw new InvariantViolationException("Please pick a wallet.");
 
             if (amount <= 0)
-                throw new InvariantViolationException("[Amount] must be > 0.");
+                throw new InvariantViolationException("Transaction amount must be > 0.");
 
             if (string.IsNullOrWhiteSpace(description))
-                throw new InvariantViolationException("[Description] cannot be empty.");
+                throw new InvariantViolationException("Transaction description cannot be empty.");
 
             Id = Guid.NewGuid();
             WalletId = walletId;
@@ -49,13 +49,13 @@ namespace PersonalFinancePlatform.Domain.Transaction.Entities
              is okay, not transfer
              */
             if (walletId == Guid.Empty)
-                throw new InvariantViolationException("[Wallet] for this transaction cannot be empty.");
+                throw new InvariantViolationException("Please pick a wallet.");
 
             if (amount <= 0)
-                throw new InvariantViolationException("[Amount] must be > 0.");
+                throw new InvariantViolationException("Transaction amount must be > 0.");
 
             if (string.IsNullOrWhiteSpace(description))
-                throw new InvariantViolationException("[Description] cannot be empty.");
+                throw new InvariantViolationException("Transaction description cannot be empty.");
 
             WalletId = walletId;
             Amount = amount;

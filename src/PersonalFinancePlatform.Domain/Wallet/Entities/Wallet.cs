@@ -20,10 +20,10 @@ namespace PersonalFinancePlatform.Domain.Wallet.Entities
             Id = Guid.NewGuid();
 
             if(string.IsNullOrWhiteSpace(walletName))
-                throw new InvariantViolationException("[Wallet Name] cannot be empty.");
+                throw new InvariantViolationException("Name cannot be empty.");
 
             if (ownerId == Guid.Empty)
-                throw new InvariantViolationException("[Owner ID] cannot be empty.");
+                throw new InvariantViolationException("User cannot be empty.");
 
             OwnerId = ownerId;
             WalletName = walletName;
@@ -34,9 +34,15 @@ namespace PersonalFinancePlatform.Domain.Wallet.Entities
         public void Rename(string newName)
         {
             if(string.IsNullOrWhiteSpace(newName))
-                throw new InvariantViolationException("[Wallet Name] cannot be empty.");
+                throw new InvariantViolationException("Name cannot be empty.");
 
             WalletName = newName;
+        }
+
+        public void EnsureSufficientBalance(decimal amount)
+        {
+            if((Balance - amount) < 0)
+                throw new InvariantViolationException("Insufficient funds.");
         }
 
         //Can only be accessed within this domain.
@@ -53,6 +59,8 @@ namespace PersonalFinancePlatform.Domain.Wallet.Entities
                     IncreaseBalance(amount);
                     break;
                 case TransactionType.Expense:
+                    //Make sure the balance wouldnt go negative if deducted by amount
+                    EnsureSufficientBalance(amount);
                     DecreaseBalance(amount);
                     break;
             }
