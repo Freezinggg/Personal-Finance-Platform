@@ -12,8 +12,8 @@ namespace PersonalFinancePlatform.Application.Interfaces.Persistence
         void Add(Domain.Transaction.Entities.Transaction transaction);
 
         //Smell, all filter parameter same, might refactor > create 1 class to populate it.
-        Task<int> CountTransactionsAsync(Guid userId, Guid? walletId, TransactionType? type, CancellationToken cancellationToken);
+        Task<int> CountTransactionsAsync(GetTransactionHistoryFilter filter, CancellationToken cancellationToken);
         Task<IReadOnlyList<GetTransactionHistoryResult>> GetTransactionHistoryAsync(
-            Guid userId, Guid? walletId, TransactionType? type, int page, int pageSize, CancellationToken cancellationToken);
+            GetTransactionHistoryFilter filter, int page, int pageSize, CancellationToken cancellationToken);
     }
 }

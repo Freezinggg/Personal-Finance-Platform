@@ -15,20 +15,10 @@ namespace PersonalFinancePlatform.Application.Handler.Transaction.GetTransaction
 
         public async Task<Result<PagedResult<GetTransactionHistoryResult>>> Handle(GetTransactionHistoryQuery request, CancellationToken cancellationToken)
         {
+            var filter = new GetTransactionHistoryFilter(request.UserId, request.WalletId, request.TransactionType);
 
-            var totalItems = await _transactionRepo.CountTransactionsAsync(
-                request.UserId,
-                request.WalletId,
-                request.TransactionType,
-                cancellationToken);
-
-            var items = await _transactionRepo.GetTransactionHistoryAsync(
-                request.UserId,
-                request.WalletId,
-                request.TransactionType,
-                request.Page,
-                request.PageSize,
-                cancellationToken);
+            var totalItems = await _transactionRepo.CountTransactionsAsync(filter, cancellationToken);
+            var items = await _transactionRepo.GetTransactionHistoryAsync(filter, request.Page, request.PageSize, cancellationToken);
 
             PagedResult<GetTransactionHistoryResult> pagedResult = new(
                 items,
