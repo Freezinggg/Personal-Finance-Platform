@@ -12,9 +12,9 @@ using static PersonalFinancePlatform.Domain.Exception.DomainException;
 namespace PersonalFinancePlatform.Application.Handler.Transaction.RecordTransaction
 {
     public class RecordTransactionHandler(
-             ITransactionRepository transactionRepository
-            , IWalletRepository walletRepository
-            , IUnitOfWork unitOfWork
+             ITransactionRepository transactionRepository,
+             IWalletRepository walletRepository,
+             IUnitOfWork unitOfWork
         ) : IRequestHandler<RecordTransactionCommand, Result<RecordTransactionResult>>
     {
 
@@ -41,7 +41,7 @@ namespace PersonalFinancePlatform.Application.Handler.Transaction.RecordTransact
                     new(request.WalletId, request.Amount, request.Description, request.TransactionType, request.TransactionAt, now);
 
                 //3. Start of UoW
-                
+
 
                 //persist transaction
                 _transactionRepo.Add(transaction);
