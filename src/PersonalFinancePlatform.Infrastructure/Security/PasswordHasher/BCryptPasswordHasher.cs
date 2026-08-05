@@ -14,9 +14,9 @@ namespace PersonalFinancePlatform.Infrastructure.Security.PasswordHasher
             return hashed;
         }
 
-        public bool Verify(Password password, PasswordHash passwordHash)
+        public bool Verify(string password, PasswordHash passwordHash)
         {
-            return BCrypt.Net.BCrypt.Verify(password.Value, passwordHash.Value);
+            return BCrypt.Net.BCrypt.Verify(password, passwordHash.Value);
         }
     }
 }

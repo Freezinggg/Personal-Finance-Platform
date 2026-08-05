@@ -9,6 +9,6 @@ namespace PersonalFinancePlatform.Application.Interfaces.Security
     {
         PasswordHash Hash(Password password);
 
-        bool Verify(Password password, PasswordHash passwordHash);
+        bool Verify(string password, PasswordHash passwordHash);
     }
 }

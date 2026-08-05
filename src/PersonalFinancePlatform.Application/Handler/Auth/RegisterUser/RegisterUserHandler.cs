@@ -14,7 +14,7 @@ using static PersonalFinancePlatform.Domain.Exception.DomainException;
 
 namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
 {
-    public class RegisterUserHandler(
+    public sealed class RegisterUserHandler(
             IUserRepository userRepository
             , IWalletRepository walletRepository
             , IPasswordHasher passwordHasher
