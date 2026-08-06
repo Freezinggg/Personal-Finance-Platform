@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using PersonalFinancePlatform.Application.Common;
 using PersonalFinancePlatform.Application.Handler.Auth.RegisterUser;
+using PersonalFinancePlatform.Application.Interfaces.Authentication;
 using PersonalFinancePlatform.Application.Interfaces.Persistence;
 using PersonalFinancePlatform.Application.Interfaces.Security;
 using PersonalFinancePlatform.Domain.Exception;
@@ -15,11 +16,13 @@ namespace PersonalFinancePlatform.Application.Handler.Auth.Login
 {
     public sealed class LoginHandler(
             IUserRepository userRepository,
-            IPasswordHasher passwordHasher
+            IPasswordHasher passwordHasher,
+            IJwtTokenGenerator jwtGenerator
         ) : IRequestHandler<LoginCommand, Result<LoginResult>>
     {
         private readonly IUserRepository _userRepo = userRepository;
         private readonly IPasswordHasher _passwordHasher = passwordHasher;
+        private readonly IJwtTokenGenerator _jwtTokenGenerator = jwtGenerator;
 
         public async Task<Result<LoginResult>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
@@ -37,7 +40,15 @@ namespace PersonalFinancePlatform.Application.Handler.Auth.Login
                 if (!_passwordHasher.Verify(request.Password, user.PasswordHash))
                     return Result<LoginResult>.Fail("Invalid email or password.");
 
-                return Result<LoginResult>.Success(new LoginResult(user.Id, user.DisplayName));
+                var jwtToken = _jwtTokenGenerator.Generate(user);
+
+                return Result<LoginResult>.Success(
+                    new LoginResult(
+                        jwtToken.AccessToken,
+                        jwtToken.ExpiresAt,
+                        user.Id, 
+                        user.DisplayName
+                    ));
             }
             catch (DomainException ex)
             {
@@ -55,7 +66,7 @@ namespace PersonalFinancePlatform.Application.Handler.Auth.Login
             }
             catch
             {
-                return Result<LoginResult>.Error("Unhandled domain exception.");
+                return Result<LoginResult>.Error("An unexpected error occurred..");
             }
             
         }

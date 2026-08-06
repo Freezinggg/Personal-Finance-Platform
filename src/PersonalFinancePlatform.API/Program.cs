@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using PersonalFinancePlatform.Application.Handler.Auth.RegisterUser;
+using PersonalFinancePlatform.Application.Interfaces.Authentication;
 using PersonalFinancePlatform.Application.Interfaces.Persistence;
 using PersonalFinancePlatform.Application.Interfaces.Security;
+using PersonalFinancePlatform.Infrastructure.Authentication;
 using PersonalFinancePlatform.Infrastructure.Persistence.Configuration;
 using PersonalFinancePlatform.Infrastructure.Persistence.Repository;
 using PersonalFinancePlatform.Infrastructure.Security.PasswordHasher;
@@ -22,6 +24,7 @@ builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 
 builder.Services.AddScoped<IUnitOfWork, EFUnitOfWork>();
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
 //MediatR
 builder.Services.AddMediatR(cfg =>
@@ -38,6 +41,8 @@ builder.Services
             System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
     });
 
+//Jwt options
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
