@@ -20,7 +20,7 @@ namespace PersonalFinancePlatform.Infrastructure.Authentication
         {
             var handler = new JwtSecurityTokenHandler();
             var now = DateTime.UtcNow;
-            var expiresAt = now.AddMinutes(_jwtOptions.ExpirationMinutes);
+            var expiresAt = now.AddMinutes(_jwtOptions.ExpirationInMinutes);
          
             //Build identity claims
             var claims = new List<Claim>
@@ -29,7 +29,7 @@ namespace PersonalFinancePlatform.Infrastructure.Authentication
             };
 
             //Create signing credentials
-            var secretBytes = Encoding.UTF8.GetBytes(_jwtOptions.Secret);
+            var secretBytes = Encoding.UTF8.GetBytes(_jwtOptions.SecretKey);
             var key = new SymmetricSecurityKey(secretBytes);
             var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

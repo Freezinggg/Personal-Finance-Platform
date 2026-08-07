@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PersonalFinancePlatform.API.Contracts.Auth;
@@ -16,6 +17,7 @@ namespace PersonalFinancePlatform.API.API.Authentication
 
         private readonly IMediator _mediator = mediator;
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
         {
@@ -33,6 +35,7 @@ namespace PersonalFinancePlatform.API.API.Authentication
             };
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {

@@ -13,7 +13,12 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Repository
 {
     public sealed class TransactionRepository(AppDbContext dbContext) : ITransactionRepository
     {
-        private sealed record TransactionHistoryProjection(Transaction Transaction, Wallet Wallet);
+        //private sealed record TransactionHistoryProjection(Transaction Transaction, Wallet Wallet);
+        private sealed class TransactionHistoryProjection
+        {
+            public Transaction Transaction { get; init; } = default!;
+            public Wallet Wallet { get; init; } = default!;
+        }
 
         private readonly AppDbContext _dbContext = dbContext;
 
@@ -26,7 +31,13 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Repository
         {
             var query = from transaction in _dbContext.Transactions.AsNoTracking()
                         join wallet in _dbContext.Wallets.AsNoTracking() on transaction.WalletId equals wallet.Id
-                        select new TransactionHistoryProjection(transaction, wallet);
+                        where wallet.OwnerId == userId
+                        //select new TransactionHistoryProjection(transaction, wallet);
+                        select new TransactionHistoryProjection
+                        {
+                            Transaction = transaction,
+                            Wallet = wallet
+                        };
 
             return query;
         }
@@ -54,6 +65,8 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Repository
         {
             var query = BuildBaseTransactionHistoryQuery(filter.UserId);
             query = ApplyFilters(query, filter);
+
+            Console.WriteLine(query.ToQueryString());
 
             var items = await query
                 .OrderByDescending(x => x.Transaction.TransactionAt)
