@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using PersonalFinancePlatform.Application.Common;
+using PersonalFinancePlatform.Application.Handler.Auth.RegisterUser;
 using PersonalFinancePlatform.Application.Interfaces.Persistence;
 using PersonalFinancePlatform.Application.Interfaces.Security;
 using PersonalFinancePlatform.Domain.Exception;
@@ -71,7 +72,7 @@ namespace PersonalFinancePlatform.Application.Handler.Transaction.RecordTransact
             catch
             {
                 await _uow.RollbackAsync(cancellationToken);
-                return Result<RecordTransactionResult>.Error("Unhandled domain exception.");
+                return Result<RecordTransactionResult>.Error("An unexpected error occurred..");
             }
 
         }

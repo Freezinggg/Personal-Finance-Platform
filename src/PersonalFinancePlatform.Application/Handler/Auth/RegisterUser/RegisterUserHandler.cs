@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using PersonalFinancePlatform.Application.Common;
+using PersonalFinancePlatform.Application.Handler.Auth.Login;
 using PersonalFinancePlatform.Application.Handler.Transaction.RecordTransaction;
 using PersonalFinancePlatform.Application.Interfaces.Persistence;
 using PersonalFinancePlatform.Application.Interfaces.Security;
@@ -14,7 +15,7 @@ using static PersonalFinancePlatform.Domain.Exception.DomainException;
 
 namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
 {
-    public class RegisterUserHandler(
+    public sealed class RegisterUserHandler(
             IUserRepository userRepository
             , IWalletRepository walletRepository
             , IPasswordHasher passwordHasher
@@ -81,7 +82,7 @@ namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
             catch
             {
                 await _uow.RollbackAsync(cancellationToken);
-                return Result<RegisterUserResult>.Error("Unhandled domain exception.");
+                return Result<RegisterUserResult>.Error("An unexpected error occurred..");
             }
         }
     }

@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <Folder Include="Handler\User\" />
+    <Folder Include="Options\Authentication\" />
   </ItemGroup>
 
 </Project>
