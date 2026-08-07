@@ -65,11 +65,13 @@ tests/
 - Solution Structure
 - Clean Architecture
 - Repository Setup
+  
 **Sprint 1**
 - Authentication
 - User Registration
 - Wallet Domain
 - Transaction Domain
+  
 **Future Sprints**
 - Categories
 - Financial Reports
