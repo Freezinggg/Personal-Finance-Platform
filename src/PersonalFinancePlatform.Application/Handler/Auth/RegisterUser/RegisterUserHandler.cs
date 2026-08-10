@@ -31,10 +31,10 @@ namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
 
         public async Task<Result<RegisterUserResult>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
+            bool transactionStarted = false;
             try
             {
-                await _uow.BeginAsync(cancellationToken);
-
+                
                 DateTime now = DateTime.UtcNow;
 
                 Email email = new Email(request.Email);
@@ -50,6 +50,8 @@ namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
                 // Create User
                 User user = new User(email, request.DisplayName, hashedPassword, now);
 
+                await _uow.BeginAsync(cancellationToken);
+                transactionStarted = true;
                 // Save User
                 _userRepo.Add(user);
 
@@ -81,7 +83,7 @@ namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
             }
             catch
             {
-                await _uow.RollbackAsync(cancellationToken);
+                if(transactionStarted) await _uow.RollbackAsync(cancellationToken);
                 return Result<RegisterUserResult>.Error("An unexpected error occurred..");
             }
         }

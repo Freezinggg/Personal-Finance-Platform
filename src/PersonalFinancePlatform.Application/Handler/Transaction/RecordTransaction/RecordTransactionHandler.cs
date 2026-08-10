@@ -25,10 +25,9 @@ namespace PersonalFinancePlatform.Application.Handler.Transaction.RecordTransact
 
         public async Task<Result<RecordTransactionResult>> Handle(RecordTransactionCommand request, CancellationToken cancellationToken)
         {
+            bool transactionStarted = false;
             try
             {
-                await _uow.BeginAsync(cancellationToken);
-
                 DateTime now = DateTime.UtcNow;
                 //1. Validate request, but mostly its inside domain, no global invariant/business yet.
 
@@ -42,7 +41,8 @@ namespace PersonalFinancePlatform.Application.Handler.Transaction.RecordTransact
                     new(request.WalletId, request.Amount, request.Description, request.TransactionType, request.TransactionAt, now);
 
                 //3. Start of UoW
-
+                await _uow.BeginAsync(cancellationToken);
+                transactionStarted = true;
 
                 //persist transaction
                 _transactionRepo.Add(transaction);
@@ -71,7 +71,8 @@ namespace PersonalFinancePlatform.Application.Handler.Transaction.RecordTransact
             }
             catch
             {
-                await _uow.RollbackAsync(cancellationToken);
+                if(transactionStarted) await _uow.RollbackAsync(cancellationToken);
+
                 return Result<RecordTransactionResult>.Error("An unexpected error occurred..");
             }
 

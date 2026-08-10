@@ -30,7 +30,10 @@ namespace PersonalFinancePlatform.Infrastructure.UnitOfWork
 
         public async Task RollbackAsync(CancellationToken ct)
         {
-            await _tx!.RollbackAsync(ct);
+            if (_tx is null)
+                return;
+
+            await _tx.RollbackAsync(ct);
         }
     }
 }

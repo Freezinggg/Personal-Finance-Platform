@@ -7,6 +7,7 @@ using PersonalFinancePlatform.Application.Common;
 using PersonalFinancePlatform.Application.Handler.Auth.RegisterUser;
 using PersonalFinancePlatform.Application.Handler.Transaction.GetTransactionHistory;
 using PersonalFinancePlatform.Application.Handler.Transaction.RecordTransaction;
+using PersonalFinancePlatform.Application.Handler.Transaction.UpdateTransaction;
 using System.Security.Claims;
 
 namespace PersonalFinancePlatform.API.API.Transaction
@@ -35,19 +36,36 @@ namespace PersonalFinancePlatform.API.API.Transaction
             };
         }
 
+
+        [HttpPut("{transactionId}")]
+        public async Task<IActionResult> Update(Guid transactionId, [FromBody] UpdateTransactionRequest request)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdClaim, out var userId)) return Unauthorized();
+
+            var result = await _mediator.Send(new UpdateTransactionCommand(userId, transactionId, request.Amount, request.Description, request.TransactionType, request.TransactionAt));
+            return result.Status switch
+            {
+                ResultStatus.Success => Ok(ApiResponse<UpdateTransactionResult>.Ok(result.Data)),
+                ResultStatus.Invalid => BadRequest(ApiResponse.Fail(result.ErrorMessage)),
+                ResultStatus.Fail => Conflict(ApiResponse.Fail(result.ErrorMessage)),
+                ResultStatus.Error => StatusCode(500, ApiResponse.Fail(result.ErrorMessage)),
+                ResultStatus.NotFound => NotFound(ApiResponse.Fail(result.ErrorMessage)),
+                ResultStatus.ServiceUnavailable => StatusCode(503, ApiResponse.Fail(result.ErrorMessage)),
+
+                _ => StatusCode(500, ApiResponse.Fail("Unhandled result status")) //default value if ResultStatus is its new or default
+            };
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetTransactionHistory([FromQuery] GetTransactionHistoryRequest request)
         {
-            //Hardcode userId, will remove later if have jwt/authorization
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdClaim, out var userId))
-            {
-                return Unauthorized();
-            }
+            if (!Guid.TryParse(userIdClaim, out var userId)) return Unauthorized();
 
             var result = await _mediator.Send(
                 new GetTransactionHistoryQuery(
-                    Guid.Parse(userIdClaim),
+                    userId,
                     request.WalletId,
                     request.TransactionType,
                     request.Page,
