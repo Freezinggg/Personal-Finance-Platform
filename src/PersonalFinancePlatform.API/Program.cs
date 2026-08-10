@@ -1,6 +1,9 @@
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using PersonalFinancePlatform.Application.Common;
 using PersonalFinancePlatform.Application.Handler.Auth.RegisterUser;
 using PersonalFinancePlatform.Application.Interfaces.Authentication;
 using PersonalFinancePlatform.Application.Interfaces.Persistence;
@@ -29,6 +32,9 @@ builder.Services.AddScoped<IUnitOfWork, EFUnitOfWork>();
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
+//FluentValidation
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
+
 //MediatR
 builder.Services.AddMediatR(cfg =>
 {
@@ -36,13 +42,13 @@ builder.Services.AddMediatR(cfg =>
 });
 
 //Ignore null when returning json
-//builder.Services
-//    .AddControllers()
-//    .AddJsonOptions(options =>
-//    {
-//        options.JsonSerializerOptions.DefaultIgnoreCondition =
-//            System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
-//    });
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.DefaultIgnoreCondition =
+            System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+    });
 
 //Jwt options
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
@@ -82,7 +88,10 @@ builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
+//FluentNValidation
+builder.Services.AddTransient(
+    typeof(IPipelineBehavior<,>),
+    typeof(ValidationBehavior<,>));
 
 
 var app = builder.Build();

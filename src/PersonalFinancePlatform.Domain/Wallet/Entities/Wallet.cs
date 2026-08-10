@@ -45,6 +45,12 @@ namespace PersonalFinancePlatform.Domain.Wallet.Entities
                 throw new InvariantViolationException("Insufficient funds.");
         }
 
+        public void EnsureValidBalance()
+        {
+            if(Balance < 0)
+                throw new InvariantViolationException("Balance should be valid.");
+        }
+
         //Can only be accessed within this domain.
         private void IncreaseBalance(decimal amount) => Balance += amount;
         private void DecreaseBalance(decimal amount) => Balance -= amount;
@@ -62,6 +68,20 @@ namespace PersonalFinancePlatform.Domain.Wallet.Entities
                     //Make sure the balance wouldnt go negative if deducted by amount
                     EnsureSufficientBalance(amount);
                     DecreaseBalance(amount);
+                    break;
+            }
+        }
+
+        public void RevertTransaction(Domain.Transaction.Entities.Transaction transaction)
+        {
+            decimal amount = transaction.Amount;
+            switch (transaction.TransactionType)
+            {
+                case TransactionType.Income:
+                    DecreaseBalance(amount);
+                    break;
+                case TransactionType.Expense:
+                    IncreaseBalance(amount);
                     break;
             }
         }

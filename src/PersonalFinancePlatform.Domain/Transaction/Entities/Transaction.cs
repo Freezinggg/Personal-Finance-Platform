@@ -64,6 +64,4 @@ namespace PersonalFinancePlatform.Domain.Transaction.Entities
             TransactionAt = transactionAt;
         }
     }
-
-    
 }

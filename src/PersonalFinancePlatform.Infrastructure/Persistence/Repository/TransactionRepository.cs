@@ -84,5 +84,13 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Repository
 
             return items;
         }
+
+        public async Task<Transaction?> FindByIdForUserAsync(Guid transactionId, Guid userId, CancellationToken cancellationToken)
+        {
+            return await _dbContext.Transactions
+            .FirstOrDefaultAsync(x => x.Id == transactionId
+                        && _dbContext.Wallets.Any(w => w.Id == x.WalletId && w.OwnerId == userId),
+                        cancellationToken);
+        }
     }
 }
