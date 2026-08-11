@@ -11,6 +11,7 @@ namespace PersonalFinancePlatform.Application.Interfaces.Persistence
     {
         void Add(Domain.Transaction.Entities.Transaction transaction);
         Task<Domain.Transaction.Entities.Transaction?> FindByIdForUserAsync(Guid transactionId, Guid userId, CancellationToken cancellationToken);
+        void Delete(Domain.Transaction.Entities.Transaction transaction);
 
         //Smell, all filter parameter same, might refactor > create 1 class to populate it.
         Task<int> CountTransactionsAsync(GetTransactionHistoryFilter filter, CancellationToken cancellationToken);
