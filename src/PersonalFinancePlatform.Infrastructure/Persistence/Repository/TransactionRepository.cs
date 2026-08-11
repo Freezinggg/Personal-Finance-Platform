@@ -92,5 +92,10 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Repository
                         && _dbContext.Wallets.Any(w => w.Id == x.WalletId && w.OwnerId == userId),
                         cancellationToken);
         }
+
+        public void Delete(Transaction transaction)
+        {
+            _dbContext.Transactions.Remove(transaction);
+        }
     }
 }

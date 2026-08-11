@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using PersonalFinancePlatform.API.Contracts.Transaction;
 using PersonalFinancePlatform.Application.Common;
 using PersonalFinancePlatform.Application.Handler.Auth.RegisterUser;
+using PersonalFinancePlatform.Application.Handler.Transaction.DeleteTransaction;
 using PersonalFinancePlatform.Application.Handler.Transaction.GetTransactionHistory;
 using PersonalFinancePlatform.Application.Handler.Transaction.RecordTransaction;
 using PersonalFinancePlatform.Application.Handler.Transaction.UpdateTransaction;
@@ -47,6 +48,26 @@ namespace PersonalFinancePlatform.API.API.Transaction
             return result.Status switch
             {
                 ResultStatus.Success => Ok(ApiResponse<UpdateTransactionResult>.Ok(result.Data)),
+                ResultStatus.Invalid => BadRequest(ApiResponse.Fail(result.ErrorMessage)),
+                ResultStatus.Fail => Conflict(ApiResponse.Fail(result.ErrorMessage)),
+                ResultStatus.Error => StatusCode(500, ApiResponse.Fail(result.ErrorMessage)),
+                ResultStatus.NotFound => NotFound(ApiResponse.Fail(result.ErrorMessage)),
+                ResultStatus.ServiceUnavailable => StatusCode(503, ApiResponse.Fail(result.ErrorMessage)),
+
+                _ => StatusCode(500, ApiResponse.Fail("Unhandled result status")) //default value if ResultStatus is its new or default
+            };
+        }
+
+        [HttpDelete("{transactionId}")]
+        public async Task<IActionResult> Delete(Guid transactionId)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdClaim, out var userId)) return Unauthorized();
+
+            var result = await _mediator.Send(new DeleteTransactionCommand(userId, transactionId));
+            return result.Status switch
+            {
+                ResultStatus.Success => Ok(ApiResponse<bool>.Ok(result.Data)),
                 ResultStatus.Invalid => BadRequest(ApiResponse.Fail(result.ErrorMessage)),
                 ResultStatus.Fail => Conflict(ApiResponse.Fail(result.ErrorMessage)),
                 ResultStatus.Error => StatusCode(500, ApiResponse.Fail(result.ErrorMessage)),
