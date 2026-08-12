@@ -56,7 +56,7 @@ namespace PersonalFinancePlatform.Application.Handler.Auth.RegisterUser
                 _userRepo.Add(user);
 
                 // Create and save wallet
-                Wallet wallet = new Wallet(user.Id, "Cash", now);
+                Domain.Wallet.Entities.Wallet wallet = new Domain.Wallet.Entities.Wallet(user.Id, "Cash", now);
                 _walletRepo.Add(wallet);
 
                 // Commit

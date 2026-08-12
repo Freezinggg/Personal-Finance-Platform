@@ -27,8 +27,16 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Configuration
                 .OnDelete(DeleteBehavior.Restrict); //Cannot delete user unless delete all wallets first.
 
             builder.Property(x => x.WalletName)
-                .HasMaxLength(255)
+                .HasMaxLength(100)
                 .IsRequired();
+
+            //Makes query faster WHERE OwnerId and WalletName and make OWNERID + WalletName combination unique
+            builder.HasIndex(x => new
+            {
+                x.OwnerId,
+                x.WalletName,
+            })
+            .IsUnique();
 
             builder.Property(x => x.Balance)
                 .HasPrecision(18, 2);

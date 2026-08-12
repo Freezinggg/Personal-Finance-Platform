@@ -18,26 +18,28 @@ namespace PersonalFinancePlatform.Domain.Wallet.Entities
         public Wallet(Guid ownerId, string walletName,  DateTime createdAt)
         {
             Id = Guid.NewGuid();
-
-            if(string.IsNullOrWhiteSpace(walletName))
-                throw new InvariantViolationException("Name cannot be empty.");
-
+            
             if (ownerId == Guid.Empty)
-                throw new InvariantViolationException("User cannot be empty.");
+                throw new InvariantViolationException("Wallet must have Owner.");
 
             OwnerId = ownerId;
-            WalletName = walletName;
+            WalletName = ValidateAndNormalizeName(walletName);
             Balance = 0;
             CreatedAt = createdAt;
         }
 
-        public void Rename(string newName)
+        public string ValidateAndNormalizeName(string walletName)
         {
-            if(string.IsNullOrWhiteSpace(newName))
-                throw new InvariantViolationException("Name cannot be empty.");
+            if (string.IsNullOrWhiteSpace(walletName))
+                throw new InvariantViolationException("Wallet Name cannot be empty.");
 
-            WalletName = newName;
+            var normalizedWalletName = walletName.Trim();
+            if (normalizedWalletName.Length < 2 || normalizedWalletName.Length > 100)
+                throw new InvariantViolationException("Wallet Name have to be 2-100 characters.");
+
+            return normalizedWalletName;
         }
+        public void Rename(string newWalletName) => WalletName = ValidateAndNormalizeName(newWalletName);
 
         public void EnsureSufficientBalance(decimal amount)
         {
