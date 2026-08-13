@@ -23,6 +23,12 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Repository
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
+        public async Task DeleteAsync(Wallet wallet, CancellationToken cancellationToken)
+        {
+            _dbContext.Wallets.Remove(wallet);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
         public Task<bool> ExistsByNameAsync(Guid ownerId, string walletName, CancellationToken cancellationToken)
         {
             return _dbContext.Wallets
@@ -30,6 +36,26 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Repository
                 .AnyAsync(
                     x => x.OwnerId == ownerId &&
                          x.WalletName.ToLower() == walletName.ToLower(),
+                    cancellationToken);
+        }
+
+        public Task<bool> ExistsByNameAsync(Guid id, Guid ownerId, string walletName, CancellationToken cancellationToken)
+        {
+            return _dbContext.Wallets
+            .AsNoTracking()
+            .AnyAsync(
+                x => x.OwnerId == ownerId &&
+                     x.WalletName.ToLower() == walletName.ToLower() &&
+                     x.Id != id,
+                cancellationToken);
+        }
+
+        public Task<Wallet?> GetByIdAndOwnerAsync(Guid id, Guid ownerId, CancellationToken cancellationToken)
+        {
+            return _dbContext.Wallets
+                .FirstOrDefaultAsync(
+                    x => x.OwnerId == ownerId &&
+                        x.Id == id,
                     cancellationToken);
         }
 

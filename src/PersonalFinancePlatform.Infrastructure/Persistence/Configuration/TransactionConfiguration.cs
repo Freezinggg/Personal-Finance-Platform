@@ -20,7 +20,7 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Configuration
                 .HasOne<Wallet>()
                 .WithMany()
                 .HasForeignKey(x => x.WalletId)
-                .OnDelete(DeleteBehavior.Restrict); //Cannot delete wallet if theres transaction exist.
+                .OnDelete(DeleteBehavior.Cascade); //Deleting wallet means deleting all transactions inside it
 
             builder.Property(x => x.Amount)
                 .HasPrecision(18, 2)

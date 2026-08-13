@@ -13,7 +13,8 @@ using static PersonalFinancePlatform.Domain.Exception.DomainException;
 namespace PersonalFinancePlatform.Application.Handler.Wallet.CreateWallet
 {
     public class CreateWalletHandler(
-        IWalletRepository walletRepository) : IRequestHandler<CreateWalletCommand, Result<Guid>>
+        IWalletRepository walletRepository
+        ) : IRequestHandler<CreateWalletCommand, Result<Guid>>
     {
         private readonly IWalletRepository _walletRepo = walletRepository;
 
@@ -24,7 +25,7 @@ namespace PersonalFinancePlatform.Application.Handler.Wallet.CreateWallet
                 var wallet = new Domain.Wallet.Entities.Wallet(request.UserId, request.WalletName, DateTime.UtcNow);
                 var existsWallet = await _walletRepo.ExistsByNameAsync(request.UserId, wallet.WalletName, cancellationToken);
                 if (existsWallet)
-                    return Result<Guid>.Invalid("Wallet with same name already exist");
+                    return Result<Guid>.Fail("Wallet with same name already exist");
 
                 await _walletRepo.AddAsync(wallet, cancellationToken);
                 return Result<Guid>.Success(wallet.Id);

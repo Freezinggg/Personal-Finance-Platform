@@ -11,6 +11,9 @@ namespace PersonalFinancePlatform.Application.Interfaces.Persistence
         void Add(Wallet wallet);
         Task AddAsync(Wallet wallet, CancellationToken cancellationToken);
         Task<Wallet?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        Task<Wallet?> GetByIdAndOwnerAsync(Guid id, Guid ownerId, CancellationToken cancellationToken);
         Task<bool> ExistsByNameAsync(Guid ownerId, string walletName,  CancellationToken cancellationToken);
+        Task<bool> ExistsByNameAsync(Guid id, Guid ownerId, string walletName, CancellationToken cancellationToken);
+        Task DeleteAsync(Wallet wallet, CancellationToken cancellationToken);
     }
 }
