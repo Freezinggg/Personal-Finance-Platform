@@ -45,8 +45,7 @@ namespace PersonalFinancePlatform.API.API.Wallet
         [HttpPut("{walletId}")]
         public async Task<IActionResult> Update(Guid walletId, [FromBody] UpdateWalletRequest request)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdClaim, out var userId)) return Unauthorized();
+            var userId = _currentUser.UserId;
 
             var result = await _mediator.Send(new UpdateWalletCommand(userId, walletId, request.WalletName));
             return result.Status switch
@@ -65,8 +64,7 @@ namespace PersonalFinancePlatform.API.API.Wallet
         [HttpDelete("{walletId}")]
         public async Task<IActionResult> Delete(Guid walletId)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdClaim, out var userId)) return Unauthorized();
+            var userId = _currentUser.UserId;
 
             var result = await _mediator.Send(new DeleteWalletCommand(walletId, userId));
             return result.Status switch

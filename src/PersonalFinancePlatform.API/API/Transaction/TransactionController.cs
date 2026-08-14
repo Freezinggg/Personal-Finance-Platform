@@ -62,8 +62,7 @@ namespace PersonalFinancePlatform.API.API.Transaction
         [HttpDelete("{transactionId}")]
         public async Task<IActionResult> Delete(Guid transactionId)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdClaim, out var userId)) return Unauthorized();
+            var userId = _currentUser.UserId;
 
             var result = await _mediator.Send(new DeleteTransactionCommand(userId, transactionId));
             return result.Status switch
@@ -82,8 +81,7 @@ namespace PersonalFinancePlatform.API.API.Transaction
         [HttpGet]
         public async Task<IActionResult> GetTransactionHistory([FromQuery] GetTransactionHistoryRequest request)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdClaim, out var userId)) return Unauthorized();
+            var userId = _currentUser.UserId;
 
             var result = await _mediator.Send(
                 new GetTransactionHistoryQuery(
