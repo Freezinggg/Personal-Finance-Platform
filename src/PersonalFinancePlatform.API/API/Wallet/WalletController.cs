@@ -9,6 +9,7 @@ using PersonalFinancePlatform.Application.Handler.Transaction.RecordTransaction;
 using PersonalFinancePlatform.Application.Handler.Wallet.CreateWallet;
 using PersonalFinancePlatform.Application.Handler.Wallet.DeleteWallet;
 using PersonalFinancePlatform.Application.Handler.Wallet.UpdateWallet;
+using PersonalFinancePlatform.Application.Interfaces.Authentication;
 using System.Security.Claims;
 
 namespace PersonalFinancePlatform.API.API.Wallet
@@ -16,15 +17,15 @@ namespace PersonalFinancePlatform.API.API.Wallet
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class WalletController(IMediator mediator) : ControllerBase
+    public class WalletController(IMediator mediator, ICurrentUser currentUser) : ControllerBase
     {
         private readonly IMediator _mediator = mediator;
+        private readonly ICurrentUser _currentUser = currentUser;
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateWalletRequest request)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdClaim, out var userId)) return Unauthorized();
+            var userId = _currentUser.UserId;
 
             var result = await _mediator.Send(new CreateWalletCommand(userId, request.WalletName));
             return result.Status switch

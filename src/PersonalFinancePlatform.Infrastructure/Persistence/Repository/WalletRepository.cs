@@ -35,7 +35,7 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Repository
                 .AsNoTracking()
                 .AnyAsync(
                     x => x.OwnerId == ownerId &&
-                         x.WalletName.ToLower() == walletName.ToLower(),
+                         x.WalletName == walletName,
                     cancellationToken);
         }
 
@@ -45,7 +45,7 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Repository
             .AsNoTracking()
             .AnyAsync(
                 x => x.OwnerId == ownerId &&
-                     x.WalletName.ToLower() == walletName.ToLower() &&
+                     x.WalletName == walletName &&
                      x.Id != id,
                 cancellationToken);
         }

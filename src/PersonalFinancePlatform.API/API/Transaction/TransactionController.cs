@@ -9,6 +9,7 @@ using PersonalFinancePlatform.Application.Handler.Transaction.DeleteTransaction;
 using PersonalFinancePlatform.Application.Handler.Transaction.GetTransactionHistory;
 using PersonalFinancePlatform.Application.Handler.Transaction.RecordTransaction;
 using PersonalFinancePlatform.Application.Handler.Transaction.UpdateTransaction;
+using PersonalFinancePlatform.Application.Interfaces.Authentication;
 using System.Security.Claims;
 
 namespace PersonalFinancePlatform.API.API.Transaction
@@ -16,9 +17,10 @@ namespace PersonalFinancePlatform.API.API.Transaction
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class TransactionController(IMediator mediator) : ControllerBase
+    public class TransactionController(IMediator mediator, ICurrentUser currentUser) : ControllerBase
     {
         private readonly IMediator _mediator = mediator;
+        private readonly ICurrentUser _currentUser = currentUser;
 
         [HttpPost]
         public async Task<IActionResult> Record([FromBody] RecordTransactionRequest request)
@@ -41,8 +43,7 @@ namespace PersonalFinancePlatform.API.API.Transaction
         [HttpPut("{transactionId}")]
         public async Task<IActionResult> Update(Guid transactionId, [FromBody] UpdateTransactionRequest request)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdClaim, out var userId)) return Unauthorized();
+            var userId = _currentUser.UserId;
 
             var result = await _mediator.Send(new UpdateTransactionCommand(userId, transactionId, request.Amount, request.Description, request.TransactionType, request.TransactionAt));
             return result.Status switch

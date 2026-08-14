@@ -23,6 +23,7 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Configuration
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.HasPostgresExtension("citext");
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         }
     }

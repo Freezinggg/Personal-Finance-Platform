@@ -28,7 +28,8 @@ namespace PersonalFinancePlatform.Infrastructure.Persistence.Configuration
 
             builder.Property(x => x.WalletName)
                 .HasMaxLength(100)
-                .IsRequired();
+                .IsRequired()
+                .HasColumnType("citext"); //case-insensitive
 
             //Makes query faster WHERE OwnerId and WalletName and make OWNERID + WalletName combination unique
             builder.HasIndex(x => new

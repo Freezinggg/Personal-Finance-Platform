@@ -28,7 +28,7 @@ namespace PersonalFinancePlatform.Domain.Wallet.Entities
             CreatedAt = createdAt;
         }
 
-        public string ValidateAndNormalizeName(string walletName)
+        private string ValidateAndNormalizeName(string walletName)
         {
             if (string.IsNullOrWhiteSpace(walletName))
                 throw new InvariantViolationException("Wallet Name cannot be empty.");
