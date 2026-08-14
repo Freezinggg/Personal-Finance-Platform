@@ -31,6 +31,7 @@ builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IUnitOfWork, EFUnitOfWork>();
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 
 //FluentValidation
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
@@ -80,6 +81,9 @@ builder.Services
             ClockSkew = TimeSpan.Zero
         };
     });
+
+//HttpContextAccessor
+builder.Services.AddHttpContextAccessor();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

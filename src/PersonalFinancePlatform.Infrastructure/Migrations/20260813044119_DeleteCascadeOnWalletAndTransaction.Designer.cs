@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PersonalFinancePlatform.Infrastructure.Persistence.Configuration;
@@ -11,16 +12,17 @@ using PersonalFinancePlatform.Infrastructure.Persistence.Configuration;
 namespace PersonalFinancePlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260813044119_DeleteCascadeOnWalletAndTransaction")]
+    partial class DeleteCascadeOnWalletAndTransaction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "10.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "citext");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("PersonalFinancePlatform.Domain.Transaction.Entities.Transaction", b =>
@@ -106,7 +108,7 @@ namespace PersonalFinancePlatform.Infrastructure.Migrations
                     b.Property<string>("WalletName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("citext");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
