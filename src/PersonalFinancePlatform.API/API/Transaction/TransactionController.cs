@@ -25,6 +25,8 @@ namespace PersonalFinancePlatform.API.API.Transaction
         [HttpPost]
         public async Task<IActionResult> Record([FromBody] RecordTransactionRequest request)
         {
+            var userId = _currentUser.UserId;
+
             var result = await _mediator.Send(new RecordTransactionCommand(request.WalletId, request.Amount, request.Description, request.TransactionType, request.TransactionAt));
             return result.Status switch
             {
